@@ -92,7 +92,7 @@ def fid10k_full(opts):
 @register_metric
 def kid50k_full(opts):
     opts.dataset_kwargs.update(max_size=None, xflip=False)
-    kid = kernel_inception_distance.compute_kid(opts, max_real=100000, num_gen=500, num_subsets=10, max_subset_size=100)
+    kid = kernel_inception_distance.compute_kid(opts, max_real=100000, num_gen=20, num_subsets=2, max_subset_size=5)
     return dict(kid50k_full=kid)
 
 @register_metric
