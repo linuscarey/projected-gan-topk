@@ -15,7 +15,7 @@ def find_topk_operation_using_name(model_name):
     """
     Find TopK module to use
     """
-    model_filename = "TopKGen.TopkLoss.topk_loss_module"
+    model_filename = "pg_modules.topk_loss_module"
     modellib = importlib.import_module(model_filename)
     model = None
     target_model_name = model_name
