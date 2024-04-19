@@ -20,11 +20,13 @@ class DummyMapping(nn.Module):
 
 
 class FastganSynthesis(nn.Module):
-    def __init__(self, ngf=128, z_dim=256, nc=3, img_resolution=256, lite=False, sparse_hw_info=None):
+    def __init__(self, ngf=128, z_dim=256, nc=3, img_resolution=256, lite=False, sparse_hw_info=None, sp_hw_policy_name=None, sparse_layer_loss_weight=None):
         super().__init__()
         self.img_resolution = img_resolution
         self.z_dim = z_dim
         self.sparse_hw_info = sparse_hw_info
+        self.sp_hw_policy_name = sp_hw_policy_name
+        self.sparse_layer_loss_weight = sparse_layer_loss_weight
 
         # channel multiplier
         nfc_multi = {2: 16, 4:16, 8:8, 16:4, 32:2, 64:2, 128:1, 256:0.5,
@@ -134,6 +136,8 @@ class FastganSynthesisCond(nn.Module):
 
         self.img_resolution = img_resolution
         self.sparse_hw_info = sparse_hw_info
+        self.sp_hw_policy_name = sp_hw_policy_name
+        self.sparse_layer_loss_weight = sparse_layer_loss_weight
 
         self.init = InitLayer(z_dim, channel=nfc[2], sz=4)
 
