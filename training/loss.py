@@ -64,15 +64,15 @@ class ProjectedGANLoss(Loss):
                 loss_Gmain = (-gen_logits).mean()
 
                 ## add loss for sparse_recon_loss
-                if hasattr(self.G, 'sparse_layer_loss') and len(self.G.sparse_layer_loss) > 0:
-                    sparse_layer_loss = torch.nan_to_num(torch.cat(self.G.sparse_layer_loss).mean())
+                if hasattr(self.G, 'sparse_layer_loss') and len(self.G.synthesis.sparse_layer_loss) > 0:
+                    sparse_layer_loss = torch.nan_to_num(torch.cat(self.G.synthesis.sparse_layer_loss).mean())
                     loss_Gmain += self.sparse_layer_loss_weight * sparse_layer_loss
                     
                 # Logging
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 training_stats.report('Loss/G/loss', loss_Gmain)
-                training_stats.report('Loss/G/topkloss', {[i.detach().item() for i in self.G.sparse_layer_loss]})
+                training_stats.report('Loss/G/topkloss', {[i.detach().item() for i in self.G.synthesis.sparse_layer_loss]})
 
             with torch.autograd.profiler.record_function('Gmain_backward'):
                 loss_Gmain.backward()
