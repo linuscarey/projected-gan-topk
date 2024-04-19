@@ -75,27 +75,26 @@ class IdentityBase(nn.Module):
 
 
 class TopKMaskBase(nn.Module):
-    def __init__(self, topk, topk_keep_num, topk_apply_dim, args, reso):
+    def __init__(self, topk, topk_keep_num, topk_apply_dim, reso):
         super(TopKMaskBase, self).__init__()
         self.topk_keep_num = max(topk_keep_num, 1)
         self.topk_apply_dim = topk_apply_dim
-        self.args = args
     
     def forward(self, x, tau, evaluation=False):
         raise NotImplementedError
 
 
 class TopKMaskHW(TopKMaskBase):
-    def __init__(self, topk, topk_keep_num, topk_apply_dim, args, reso):
-        super(TopKMaskHW, self).__init__(topk, topk_keep_num, topk_apply_dim, args, reso)
+    def __init__(self, topk, topk_keep_num, topk_apply_dim, reso):
+        super(TopKMaskHW, self).__init__(topk, topk_keep_num, topk_apply_dim, reso)
     
     def forward(self, x, tau, evaluation=False):
         return sparse_hw(x, tau, self.topk_keep_num), None # return None for normal topk without loss function
 
 
 class TopKMaskHWMeanReplace(TopKMaskBase):
-    def __init__(self, topk, topk_keep_num, topk_apply_dim, args, reso):
-        super(TopKMaskHWMeanReplace, self).__init__(topk, topk_keep_num, topk_apply_dim, args, reso)
+    def __init__(self, topk, topk_keep_num, topk_apply_dim, reso):
+        super(TopKMaskHWMeanReplace, self).__init__(topk, topk_keep_num, topk_apply_dim, reso)
     
     def forward(self, x, tau, evaluation=False):
         return sparse_hw_replace_w_mean(x, self.topk_keep_num), None # return None for normal topk without loss function

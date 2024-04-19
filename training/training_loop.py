@@ -153,7 +153,7 @@ def training_loop(
         print('Label shape:', training_set.label_shape)
         print()
 
-    # Construct networks.
+    # Construct networks.sparse_hw_info
     if rank == 0:
         print('Constructing networks...')
     common_kwargs = dict(c_dim=training_set.label_dim, img_resolution=training_set.resolution, img_channels=training_set.num_channels)

@@ -53,7 +53,7 @@ class FastganSynthesis(nn.Module):
             self.sparse_hw_topk_info = {self.sparse_hw_reso[i]: self.sparse_hw_topk[i] for i in range(len(self.sparse_hw_reso))}
             for reso in self.sparse_hw_reso:
                 topk_keep_num = max(int(self.sparse_hw_topk_info[reso] * reso * reso), 1)
-                setattr(self, f"sparse_hw_layer_{reso}", find_topk_operation_using_name(args.sp_hw_policy_name)(self.sparse_hw_topk_info[reso], topk_keep_num, reso * reso, args, reso))
+                setattr(self, f"sparse_hw_layer_{reso}", find_topk_operation_using_name(self.sp_hw_policy_name)(self.sparse_hw_topk_info[reso], topk_keep_num, reso * reso, reso))
         else:
             self.sparse_hw_topk_info = "None"
 
@@ -122,7 +122,7 @@ class FastganSynthesis(nn.Module):
 
 
 class FastganSynthesisCond(nn.Module):
-    def __init__(self, ngf=64, z_dim=256, nc=3, img_resolution=256, num_classes=1000, lite=False, sparse_hw_info=None):
+    def __init__(self, ngf=64, z_dim=256, nc=3, img_resolution=256, num_classes=1000, lite=False, sparse_hw_info=None, sp_hw_policy_name=None, sparse_layer_loss_weight=None):
         super().__init__()
 
         self.z_dim = z_dim
@@ -154,7 +154,7 @@ class FastganSynthesisCond(nn.Module):
             self.sparse_hw_topk_info = {self.sparse_hw_reso[i]: self.sparse_hw_topk[i] for i in range(len(self.sparse_hw_reso))}
             for reso in self.sparse_hw_reso:
                 topk_keep_num = max(int(self.sparse_hw_topk_info[reso] * reso * reso), 1)
-                setattr(self, f"sparse_hw_layer_{reso}", find_topk_operation_using_name(args.sp_hw_policy_name)(self.sparse_hw_topk_info[reso], topk_keep_num, reso * reso, args, reso))
+                setattr(self, f"sparse_hw_layer_{reso}", find_topk_operation_using_name(self.sp_hw_policy_name)(self.sparse_hw_topk_info[reso], topk_keep_num, reso * reso, reso))
         else:
             self.sparse_hw_topk_info = "None"
 
@@ -236,6 +236,9 @@ class Generator(nn.Module):
         img_channels=3,
         ngf=128,
         cond=0,
+        sparse_hw_info="32_5",
+        sp_hw_policy_name="TopKMaskHW",
+        sparse_layer_loss_weight=1e-2,
         mapping_kwargs={},
         synthesis_kwargs={}
     ):
@@ -245,11 +248,14 @@ class Generator(nn.Module):
         self.w_dim = w_dim
         self.img_resolution = img_resolution
         self.img_channels = img_channels
+        self.sparse_hw_info = sparse_hw_info
+        self.sp_hw_policy_name = sp_hw_policy_name
+        self.sparse_layer_loss_weight = sparse_layer_loss_weight
 
         # Mapping and Synthesis Networks
         self.mapping = DummyMapping()  # to fit the StyleGAN API
         Synthesis = FastganSynthesisCond if cond else FastganSynthesis
-        self.synthesis = Synthesis(ngf=ngf, z_dim=z_dim, nc=img_channels, img_resolution=img_resolution, **synthesis_kwargs)
+        self.synthesis = Synthesis(ngf=ngf, z_dim=z_dim, nc=img_channels, img_resolution=img_resolution, sparse_hw_info=sparse_hw_info, sp_hw_policy_name=sp_hw_policy_name,sparse_layer_loss_weight=sparse_layer_loss_weight, **synthesis_kwargs)
 
     def forward(self, z, c, **kwargs):
         w = self.mapping(z, c)

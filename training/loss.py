@@ -21,7 +21,7 @@ class Loss:
 
 
 class ProjectedGANLoss(Loss):
-    def __init__(self, device, G, D, G_ema, blur_init_sigma=0, blur_fade_kimg=0, **kwargs):
+    def __init__(self, device, G, D, G_ema, blur_init_sigma=0, blur_fade_kimg=0, sparse_layer_loss_weight=1e-2, **kwargs):
         super().__init__()
         self.device = device
         self.G = G
@@ -29,6 +29,7 @@ class ProjectedGANLoss(Loss):
         self.D = D
         self.blur_init_sigma = blur_init_sigma
         self.blur_fade_kimg = blur_fade_kimg
+        self.sparse_layer_loss_weight = sparse_layer_loss_weight
 
     def run_G(self, z, c, update_emas=False):
         ws = self.G.mapping(z, c, update_emas=update_emas)
@@ -62,10 +63,16 @@ class ProjectedGANLoss(Loss):
                 gen_logits = self.run_D(gen_img, gen_c, blur_sigma=blur_sigma)
                 loss_Gmain = (-gen_logits).mean()
 
+                ## add loss for sparse_recon_loss
+                if hasattr(self.G, 'sparse_layer_loss') and len(self.G.sparse_layer_loss) > 0:
+                    sparse_layer_loss = torch.nan_to_num(torch.cat(self.G.sparse_layer_loss).mean())
+                    loss_Gmain += self.sparse_layer_loss_weight * sparse_layer_loss
+                    
                 # Logging
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 training_stats.report('Loss/G/loss', loss_Gmain)
+                training_stats.report('Loss/G/topkloss', {[i.detach().item() for i in self.G.sparse_layer_loss]})
 
             with torch.autograd.profiler.record_function('Gmain_backward'):
                 loss_Gmain.backward()
