@@ -72,7 +72,6 @@ class ProjectedGANLoss(Loss):
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 training_stats.report('Loss/G/loss', loss_Gmain)
-                print('Loss/G/topkloss', str([i.detach().item() for i in self.G.synthesis.sparse_layer_loss]))
 
             with torch.autograd.profiler.record_function('Gmain_backward'):
                 loss_Gmain.backward()
