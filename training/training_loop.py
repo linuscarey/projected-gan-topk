@@ -36,8 +36,8 @@ from metrics import metric_main
 
 def setup_snapshot_image_grid(training_set, random_seed=0):
     rnd = np.random.RandomState(random_seed)
-    gw = np.clip(7680 // training_set.image_shape[2], 7, 32)
-    gh = np.clip(4320 // training_set.image_shape[1], 4, 32)
+    gw = np.clip(3840 // training_set.image_shape[2], 7, 32)
+    gh = np.clip(2160 // training_set.image_shape[1], 4, 32)
 
     # No labels => show random subset of training samples.
     if not training_set.has_labels:
@@ -423,14 +423,14 @@ def training_loop(
                 stats_metrics.update(result_dict.results)
 
             # save best fid ckpt
-            snapshot_pkl = os.path.join(run_dir, f'best_model.pkl')
+            #snapshot_pkl = os.path.join(run_dir, f'best_model.pkl')
             cur_nimg_txt = os.path.join(run_dir, f'best_nimg.txt')
             if rank == 0:
                 if 'fid50k_full' in stats_metrics and stats_metrics['fid50k_full'] < best_fid:
                     best_fid = stats_metrics['fid50k_full']
 
-                    with open(snapshot_pkl, 'wb') as f:
-                        dill.dump(snapshot_data, f)
+                    #with open(snapshot_pkl, 'wb') as f:
+                    #    dill.dump(snapshot_data, f)
                     # save curr iteration number (directly saving it to pkl leads to problems with multi GPU)
                     with open(cur_nimg_txt, 'w') as f:
                         f.write(str(cur_nimg))
