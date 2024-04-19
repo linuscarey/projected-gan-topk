@@ -163,8 +163,8 @@ def training_loop(
 
     # Check for existing checkpoint
     ckpt_pkl = None
-    if restart_every > 0 and os.path.isfile(misc.get_ckpt_path(run_dir)):
-        ckpt_pkl = resume_pkl = misc.get_ckpt_path(run_dir)
+    #if restart_every > 0 and os.path.isfile(misc.get_ckpt_path(run_dir)):
+    #    ckpt_pkl = resume_pkl = misc.get_ckpt_path(run_dir)
 
     # Resume from existing pickle.
     if (resume_pkl is not None) and (rank == 0):
@@ -393,6 +393,7 @@ def training_loop(
                 del value # conserve memory
 
         # Save Checkpoint if needed
+        '''
         if (rank == 0) and (restart_every > 0) and (network_snapshot_ticks is not None) and (
                 done or cur_tick % network_snapshot_ticks == 0):
             snapshot_pkl = misc.get_ckpt_path(run_dir)
@@ -407,8 +408,8 @@ def training_loop(
                 snapshot_data['progress']['pl_mean'] = loss.pl_mean.cpu()
 
             with open(snapshot_pkl, 'wb') as f:
-                pickle.dump(snapshot_data, f)
-
+                pickle.dump(snapshot_data, f)'''
+        
         # Evaluate metrics.
         # if (snapshot_data is not None) and (len(metrics) > 0):
         if cur_tick and (snapshot_data is not None) and (len(metrics) > 0):

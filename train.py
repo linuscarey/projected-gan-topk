@@ -252,6 +252,7 @@ def main(**kwargs):
     launch_training(c=c, desc=desc, outdir=opts.outdir, dry_run=opts.dry_run)
 
     # Check for restart
+    '''
     last_snapshot = misc.get_ckpt_path(c.run_dir)
     if os.path.isfile(last_snapshot):
         # get current number of training images
@@ -259,7 +260,7 @@ def main(**kwargs):
             cur_nimg = legacy.load_network_pkl(f)['progress']['cur_nimg'].item()
         if (cur_nimg//1000) < c.total_kimg:
             print('Restart: exit with code 3')
-            exit(3)
+            exit(3)'''
 
 
 if __name__ == "__main__":
