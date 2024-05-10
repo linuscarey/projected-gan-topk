@@ -28,6 +28,7 @@ from torch_utils import misc
 from torch_utils import training_stats
 from torch_utils.ops import conv2d_gradfix
 from torch_utils.ops import grid_sample_gradfix
+import matplotlib.pyplot as plt
 
 import legacy
 from metrics import metric_main
@@ -139,6 +140,7 @@ def training_loop(
     __BATCH_IDX__ = torch.tensor(0, dtype=torch.long, device=device)
     __PL_MEAN__ = torch.zeros([], device=device)
     best_fid = 9999
+    losses = []
 
     # Load training set.
     if rank == 0:
@@ -391,24 +393,6 @@ def training_loop(
                 if isinstance(value, torch.nn.Module):
                     snapshot_data[key] = value
                 del value # conserve memory
-
-        # Save Checkpoint if needed
-        '''
-        if (rank == 0) and (restart_every > 0) and (network_snapshot_ticks is not None) and (
-                done or cur_tick % network_snapshot_ticks == 0):
-            snapshot_pkl = misc.get_ckpt_path(run_dir)
-            # save as tensors to avoid error for multi GPU
-            snapshot_data['progress'] = {
-                'cur_nimg': torch.LongTensor([cur_nimg]),
-                'cur_tick': torch.LongTensor([cur_tick]),
-                'batch_idx': torch.LongTensor([batch_idx]),
-                'best_fid': best_fid,
-            }
-            if hasattr(loss, 'pl_mean'):
-                snapshot_data['progress']['pl_mean'] = loss.pl_mean.cpu()
-
-            with open(snapshot_pkl, 'wb') as f:
-                pickle.dump(snapshot_data, f)'''
         
         # Evaluate metrics.
         # if (snapshot_data is not None) and (len(metrics) > 0):
