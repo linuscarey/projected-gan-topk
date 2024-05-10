@@ -147,11 +147,11 @@ def kid50k(opts):
 @register_metric
 def pr50k3(opts):
     opts.dataset_kwargs.update(max_size=None)
-    precision, recall = precision_recall.compute_pr(opts, max_real=50000, num_gen=50000, nhood_size=3, row_batch_size=10000, col_batch_size=10000)
+    precision, recall = precision_recall.compute_pr(opts, max_real=50000, num_gen=3000, nhood_size=3, row_batch_size=1000, col_batch_size=1000)
     return dict(pr50k3_precision=precision, pr50k3_recall=recall)
 
 @register_metric
 def is50k(opts):
     opts.dataset_kwargs.update(max_size=None, xflip=False)
-    mean, std = inception_score.compute_is(opts, num_gen=50000, num_splits=10)
+    mean, std = inception_score.compute_is(opts, num_gen=3000, num_splits=10)
     return dict(is50k_mean=mean, is50k_std=std)
