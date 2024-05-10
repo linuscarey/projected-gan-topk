@@ -88,11 +88,11 @@ class FastganSynthesis(nn.Module):
         input = normalize_second_moment(input[:, 0])
 
         feat_4 = self.init(input)
-        feat_4 = self.sparse_layer(4, feat_4)
+        #feat_4 = self.sparse_layer(4, feat_4)
         feat_8 = self.feat_8(feat_4)
-        feat_8 = self.sparse_layer(8, feat_8)
+        #feat_8 = self.sparse_layer(8, feat_8)
         feat_16 = self.feat_16(feat_8)
-        feat_16 = self.sparse_layer(16, feat_16)
+        #feat_16 = self.sparse_layer(16, feat_16)
         feat_32 = self.feat_32(feat_16)
         feat_32 = self.sparse_layer(32, feat_32)
 
@@ -103,22 +103,22 @@ class FastganSynthesis(nn.Module):
         feat_64 = self.sparse_layer(64, feat_64)
 
         feat_128 = self.se_128(feat_8,  self.feat_128(feat_64))
-        feat_128 = self.sparse_layer(128, feat_128)
+        #feat_128 = self.sparse_layer(128, feat_128)
 
         if self.img_resolution >= 128:
             feat_last = feat_128
 
         if self.img_resolution >= 256:
             feat_last = self.se_256(feat_16, self.feat_256(feat_last))
-            feat_last = self.sparse_layer(256, feat_last)
+            #feat_last = self.sparse_layer(256, feat_last)
 
         if self.img_resolution >= 512:
             feat_last = self.se_512(feat_32, self.feat_512(feat_last))
-            feat_last = self.sparse_layer(512, feat_last)
+            #feat_last = self.sparse_layer(512, feat_last)
 
         if self.img_resolution >= 1024:
             feat_last = self.feat_1024(feat_last)
-            feat_last = self.sparse_layer(1024, feat_last)
+            #feat_last = self.sparse_layer(1024, feat_last)
 
         return self.to_big(feat_last)
 
@@ -195,11 +195,11 @@ class FastganSynthesisCond(nn.Module):
         input = normalize_second_moment(input[:, 0])
 
         feat_4 = self.init(input)
-        feat_4 = self.sparse_layer(4, feat_4)
+        #feat_4 = self.sparse_layer(4, feat_4)
         feat_8 = self.feat_8(feat_4, c)
-        feat_8 = self.sparse_layer(8, feat_8)
+        #feat_8 = self.sparse_layer(8, feat_8)
         feat_16 = self.feat_16(feat_8, c)
-        feat_16 = self.sparse_layer(16, feat_16)
+        #feat_16 = self.sparse_layer(16, feat_16)
         feat_32 = self.feat_32(feat_16, c)
         feat_32 = self.sparse_layer(32, feat_32)
 
@@ -210,22 +210,22 @@ class FastganSynthesisCond(nn.Module):
         feat_64 = self.sparse_layer(64, feat_64)
 
         feat_128 = self.se_128(feat_8,  self.feat_128(feat_64, c))
-        feat_128 = self.sparse_layer(128, feat_128)
+        #feat_128 = self.sparse_layer(128, feat_128)
 
         if self.img_resolution >= 128:
             feat_last = feat_128
 
         if self.img_resolution >= 256:
             feat_last = self.se_256(feat_16, self.feat_256(feat_last, c))
-            feat_last = self.sparse_layer(256, feat_last)
+            #feat_last = self.sparse_layer(256, feat_last)
 
         if self.img_resolution >= 512:
             feat_last = self.se_512(feat_32, self.feat_512(feat_last, c))
-            feat_last = self.sparse_layer(512, feat_last)
+            #feat_last = self.sparse_layer(512, feat_last)
 
         if self.img_resolution >= 1024:
             feat_last = self.feat_1024(feat_last, c)
-            feat_last = self.sparse_layer(1024, feat_last)
+            #feat_last = self.sparse_layer(1024, feat_last)
 
         return self.to_big(feat_last)
 
