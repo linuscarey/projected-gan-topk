@@ -209,7 +209,7 @@ class FastganSynthesisCond(nn.Module):
             feat_64 += eval_time_noise
         feat_64 = self.sparse_layer(64, feat_64)
 
-        feat_128 = self.se_128(feat_8,  self.feat_128(feat_64, c))
+        feat_128 = self.se_128(feat_8, self.feat_128(feat_64, c))
         feat_128 = self.sparse_layer(128, feat_128)
 
         if self.img_resolution >= 128:

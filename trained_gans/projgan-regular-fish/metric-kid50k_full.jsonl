@@ -1,0 +1,10 @@
+{"results": {"kid50k_full": 0.0314889144897462}, "metric": "kid50k_full", "total_time": 12.628393173217773, "total_time_str": "13s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713637962.4694617}
+{"results": {"kid50k_full": 0.013857231140136683}, "metric": "kid50k_full", "total_time": 1.9132044315338135, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713639148.8860066}
+{"results": {"kid50k_full": -0.004519367218017578}, "metric": "kid50k_full", "total_time": 1.9478073120117188, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713640334.4302516}
+{"results": {"kid50k_full": 0.0031953239440918324}, "metric": "kid50k_full", "total_time": 1.9367661476135254, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713641521.0151248}
+{"results": {"kid50k_full": 0.012632465362548828}, "metric": "kid50k_full", "total_time": 1.9171149730682373, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713642707.1119652}
+{"results": {"kid50k_full": -0.00024263381958018472}, "metric": "kid50k_full", "total_time": 1.9283092021942139, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713643893.9023283}
+{"results": {"kid50k_full": -0.005154781341552806}, "metric": "kid50k_full", "total_time": 1.9160089492797852, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713645081.7601595}
+{"results": {"kid50k_full": 0.007214069366455078}, "metric": "kid50k_full", "total_time": 1.9418506622314453, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713646268.370407}
+{"results": {"kid50k_full": 0.004593849182128906}, "metric": "kid50k_full", "total_time": 1.941929817199707, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713647455.4045894}
+{"results": {"kid50k_full": 0.003368988037109233}, "metric": "kid50k_full", "total_time": 1.945708990097046, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1713648363.8040822}

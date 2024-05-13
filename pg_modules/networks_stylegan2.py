@@ -16,7 +16,7 @@ from torch_utils.ops import conv2d_resample
 from torch_utils.ops import upfirdn2d
 from torch_utils.ops import bias_act
 from torch_utils.ops import fma
-
+from pg_modules.topk_loss_module import find_topk_operation_using_name
 
 @misc.profiled_function
 def normalize_2nd_moment(x, dim=1, eps=1e-8):
@@ -392,6 +392,20 @@ class SynthesisBlock(torch.nn.Module):
             conv_clamp=conv_clamp, channels_last=self.channels_last, **layer_kwargs)
         self.num_conv += 1
 
+        # sparse layers
+        if self.sparse_hw_info != "None":
+            self.sparse_hw_reso, self.sparse_hw_topk = self.sparse_hw_info.split("_")
+            self.sparse_hw_reso = [int(i) for i in self.sparse_hw_reso.split("-")]
+            self.sparse_hw_topk = [int(i) * 0.01 for i in self.sparse_hw_topk.split("-")]
+            self.sparse_hw_topk_info = {self.sparse_hw_reso[i]: self.sparse_hw_topk[i] for i in range(len(self.sparse_hw_reso))}
+            for reso in self.sparse_hw_reso:
+                topk_keep_num = max(int(self.sparse_hw_topk_info[reso] * reso * reso), 1)
+                setattr(self, f"sparse_hw_layer_{reso}", find_topk_operation_using_name(self.sp_hw_policy_name)(self.sparse_hw_topk_info[reso], topk_keep_num, reso * reso, reso))
+        else:
+            self.sparse_hw_topk_info = "None"
+
+        self.sparse_layer_loss = []
+
         if is_last or architecture == 'skip':
             self.torgb = ToRGBLayer(out_channels, img_channels, w_dim=w_dim,
                 conv_clamp=conv_clamp, channels_last=self.channels_last)
@@ -400,6 +414,16 @@ class SynthesisBlock(torch.nn.Module):
         if in_channels != 0 and architecture == 'resnet':
             self.skip = Conv2dLayer(in_channels, out_channels, kernel_size=1, bias=False, up=2,
                 resample_filter=resample_filter, channels_last=self.channels_last)
+
+    def sparse_layer(self, reso, x):
+        tau = 1.
+
+        if self.sparse_hw_topk_info != "None" and reso in self.sparse_hw_topk_info:
+            sparse_layer_reso = getattr(self, f"sparse_hw_layer_{reso}")
+            x, loss = sparse_layer_reso(x, tau = tau)
+            if torch.is_tensor(loss):
+                self.sparse_layer_loss.append(loss.unsqueeze(0))
+        return x
 
     def forward(self, x, img, ws, force_fp32=False, fused_modconv=None, update_emas=False, **layer_kwargs):
         _ = update_emas # unused
@@ -434,6 +458,8 @@ class SynthesisBlock(torch.nn.Module):
             x = self.conv0(x, next(w_iter), fused_modconv=fused_modconv, **layer_kwargs)
             x = self.conv1(x, next(w_iter), fused_modconv=fused_modconv, **layer_kwargs)
 
+        x = self.sparse_layer(self.resolution, x)
+
         # ToRGB.
         if img is not None:
             misc.assert_shape(img, [None, self.img_channels, self.resolution // 2, self.resolution // 2])
@@ -445,7 +471,7 @@ class SynthesisBlock(torch.nn.Module):
 
         assert x.dtype == dtype
         assert img is None or img.dtype == torch.float32
-        return x, img
+        return x, img, self.sparse_layer_loss
 
     def extra_repr(self):
         return f'resolution={self.resolution:d}, architecture={self.architecture:s}'
@@ -460,6 +486,9 @@ class SynthesisNetwork(torch.nn.Module):
         channel_base    = 32768,    # Overall multiplier for the number of channels.
         channel_max     = 512,      # Maximum number of channels in any layer.
         num_fp16_res    = 4,        # Use FP16 for the N highest resolutions.
+        sparse_hw_info=None,
+        sp_hw_policy_name=None,
+        sparse_layer_loss_weight=None,
         **block_kwargs,             # Arguments for SynthesisBlock.
     ):
         assert img_resolution >= 4 and img_resolution & (img_resolution - 1) == 0
@@ -472,6 +501,10 @@ class SynthesisNetwork(torch.nn.Module):
         self.block_resolutions = [2 ** i for i in range(2, self.img_resolution_log2 + 1)]
         channels_dict = {res: min(channel_base // res, channel_max) for res in self.block_resolutions}
         fp16_resolution = max(2 ** (self.img_resolution_log2 + 1 - num_fp16_res), 8)
+        self.sparse_hw_info = sparse_hw_info
+        self.sp_hw_policy_name = sp_hw_policy_name
+        self.sparse_layer_loss_weight = sparse_layer_loss_weight
+        self.sparse_layer_loss = []
 
         self.num_ws = 0
         for res in self.block_resolutions:
@@ -479,7 +512,7 @@ class SynthesisNetwork(torch.nn.Module):
             out_channels = channels_dict[res]
             use_fp16 = (res >= fp16_resolution)
             is_last = (res == self.img_resolution)
-            block = SynthesisBlock(in_channels, out_channels, w_dim=w_dim, resolution=res,
+            block = SynthesisBlock(in_channels, out_channels, True, w_dim=w_dim, resolution=res,
                 img_channels=img_channels, is_last=is_last, use_fp16=use_fp16, **block_kwargs)
             self.num_ws += block.num_conv
             if is_last:
@@ -500,7 +533,9 @@ class SynthesisNetwork(torch.nn.Module):
         x = img = None
         for res, cur_ws in zip(self.block_resolutions, block_ws):
             block = getattr(self, f'b{res}')
-            x, img = block(x, img, cur_ws, **block_kwargs)
+            x, img, sparse_loss = block(x, img, cur_ws, **block_kwargs)
+            self.sparse_layer_loss = sparse_loss
+            
         return img
 
     def extra_repr(self):
@@ -518,6 +553,9 @@ class Generator(torch.nn.Module):
         w_dim,                      # Intermediate latent (W) dimensionality.
         img_resolution,             # Output resolution.
         img_channels,               # Number of output color channels.
+        sparse_hw_info="32_5",
+        sp_hw_policy_name="TopKMaskHW",
+        sparse_layer_loss_weight=1e-2,
         mapping_kwargs      = {},   # Arguments for MappingNetwork.
         **synthesis_kwargs,         # Arguments for SynthesisNetwork.
     ):
@@ -527,7 +565,11 @@ class Generator(torch.nn.Module):
         self.w_dim = w_dim
         self.img_resolution = img_resolution
         self.img_channels = img_channels
-        self.synthesis = SynthesisNetwork(w_dim=w_dim, img_resolution=img_resolution, img_channels=img_channels, **synthesis_kwargs)
+        self.sparse_hw_info = sparse_hw_info
+        self.sp_hw_policy_name = sp_hw_policy_name
+        self.sparse_layer_loss_weight = sparse_layer_loss_weight
+
+        self.synthesis = SynthesisNetwork(w_dim=w_dim, img_resolution=img_resolution, img_channels=img_channels, sparse_hw_info=sparse_hw_info, sp_hw_policy_name=sp_hw_policy_name,sparse_layer_loss_weight=sparse_layer_loss_weight, **synthesis_kwargs)
         self.num_ws = self.synthesis.num_ws
         self.mapping = MappingNetwork(z_dim=z_dim, c_dim=c_dim, w_dim=w_dim, num_ws=self.num_ws, **mapping_kwargs)
 

@@ -1,0 +1,10 @@
+{"results": {"kid50k_full": 0.14431106567382823}, "metric": "kid50k_full", "total_time": 13.718715906143188, "total_time_str": "14s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714913875.817825}
+{"results": {"kid50k_full": 0.029004116058349537}, "metric": "kid50k_full", "total_time": 1.8769447803497314, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714915020.6733868}
+{"results": {"kid50k_full": 0.009569778442382848}, "metric": "kid50k_full", "total_time": 1.8815979957580566, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714916165.5683353}
+{"results": {"kid50k_full": -0.0016638565063475496}, "metric": "kid50k_full", "total_time": 1.9210174083709717, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714917313.6688185}
+{"results": {"kid50k_full": -0.000945281982421875}, "metric": "kid50k_full", "total_time": 1.862701177597046, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714918460.9029915}
+{"results": {"kid50k_full": 0.004061508178710938}, "metric": "kid50k_full", "total_time": 1.9063045978546143, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714919605.68296}
+{"results": {"kid50k_full": 0.010661945343017542}, "metric": "kid50k_full", "total_time": 1.8808069229125977, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714920748.6564965}
+{"results": {"kid50k_full": -0.0004000473022461648}, "metric": "kid50k_full", "total_time": 1.8894190788269043, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714921893.0622478}
+{"results": {"kid50k_full": -0.004171409606933629}, "metric": "kid50k_full", "total_time": 1.8865017890930176, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714923038.2521794}
+{"results": {"kid50k_full": -0.009435062408447336}, "metric": "kid50k_full", "total_time": 1.8639819622039795, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714923912.7228022}

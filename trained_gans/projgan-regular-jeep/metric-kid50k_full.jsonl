@@ -1,0 +1,10 @@
+{"results": {"kid50k_full": 0.06562108993530273}, "metric": "kid50k_full", "total_time": 17.490811824798584, "total_time_str": "17s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714934888.260638}
+{"results": {"kid50k_full": 0.008563385009765589}, "metric": "kid50k_full", "total_time": 1.8988642692565918, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714936050.4615595}
+{"results": {"kid50k_full": 0.0112038803100587}, "metric": "kid50k_full", "total_time": 1.9145195484161377, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714937212.5504022}
+{"results": {"kid50k_full": 0.004018383026123118}, "metric": "kid50k_full", "total_time": 1.9268877506256104, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714938375.2319899}
+{"results": {"kid50k_full": -0.005177383422851634}, "metric": "kid50k_full", "total_time": 1.8901801109313965, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714939538.053356}
+{"results": {"kid50k_full": 0.01070892333984368}, "metric": "kid50k_full", "total_time": 1.8879632949829102, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714940700.7518694}
+{"results": {"kid50k_full": 0.01532381057739265}, "metric": "kid50k_full", "total_time": 1.892618179321289, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714941863.375241}
+{"results": {"kid50k_full": -0.010294132232666087}, "metric": "kid50k_full", "total_time": 1.9525418281555176, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714943027.007683}
+{"results": {"kid50k_full": 0.01629526138305657}, "metric": "kid50k_full", "total_time": 1.922471523284912, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714944188.6020753}
+{"results": {"kid50k_full": -0.004435691833496058}, "metric": "kid50k_full", "total_time": 1.9017362594604492, "total_time_str": "2s", "num_gpus": 1, "snapshot_pkl": null, "timestamp": 1714945075.9190316}
